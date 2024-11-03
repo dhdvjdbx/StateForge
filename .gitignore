@@ -1,0 +1,50 @@
+# Sensitive files - DO NOT COMMIT
+github_accounts.csv
+project_description.txt
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Hardhat files
+cache/
+artifacts/
+typechain-types/
+
+# Testing
+coverage/
+coverage.json
+*.lcov
+
+# Environment variables
+.env
+.env.local
+.env.test
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+out/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+.cache/
+
