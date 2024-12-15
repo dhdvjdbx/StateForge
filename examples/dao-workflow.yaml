@@ -1,0 +1,83 @@
+name: SimpleDAO
+version: "1.0.0"
+initialState: INITIAL
+
+metadata:
+  description: "A simple DAO proposal and voting workflow"
+  author: "StateForge"
+
+states:
+  - name: INITIAL
+    description: "Initial state before any proposal"
+  - name: PROPOSAL
+    description: "Proposal has been submitted"
+  - name: VOTING
+    description: "Voting period is active"
+  - name: EXECUTION
+    description: "Ready for execution"
+  - name: COMPLETED
+    description: "Proposal executed"
+  - name: REJECTED
+    description: "Proposal rejected"
+
+roles:
+  - name: PROPOSER_ROLE
+    description: "Can submit proposals"
+  - name: VOTER_ROLE
+    description: "Can vote on proposals"
+  - name: EXECUTOR_ROLE
+    description: "Can execute approved proposals"
+
+transitions:
+  - id: 1
+    name: "Submit Proposal"
+    from: INITIAL
+    to: PROPOSAL
+    requiredRole: PROPOSER_ROLE
+    guard:
+      type: signature
+  
+  - id: 2
+    name: "Start Voting"
+    from: PROPOSAL
+    to: VOTING
+    requiredRole: PROPOSER_ROLE
+    guard:
+      type: timelock
+      parameter: 86400  # 1 day delay
+  
+  - id: 3
+    name: "End Voting - Approved"
+    from: VOTING
+    to: EXECUTION
+    requiredRole: EXECUTOR_ROLE
+  
+  - id: 4
+    name: "End Voting - Rejected"
+    from: VOTING
+    to: REJECTED
+    requiredRole: EXECUTOR_ROLE
+  
+  - id: 5
+    name: "Execute Proposal"
+    from: EXECUTION
+    to: COMPLETED
+    requiredRole: EXECUTOR_ROLE
+    hooks:
+      - type: pre
+        contract: "0x0000000000000000000000000000000000000000"
+      - type: post
+        contract: "0x0000000000000000000000000000000000000000"
+  
+  - id: 6
+    name: "New Proposal"
+    from: COMPLETED
+    to: PROPOSAL
+    requiredRole: PROPOSER_ROLE
+  
+  - id: 7
+    name: "Retry Rejected"
+    from: REJECTED
+    to: PROPOSAL
+    requiredRole: PROPOSER_ROLE
+
