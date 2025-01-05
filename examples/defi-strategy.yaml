@@ -1,0 +1,118 @@
+name: DeFiStrategy
+version: "1.0.0"
+initialState: IDLE
+
+metadata:
+  description: "Multi-step DeFi yield farming strategy"
+  author: "StateForge Examples"
+  category: "DeFi"
+
+states:
+  - name: IDLE
+    description: "Strategy inactive, funds in wallet"
+  - name: DEPOSITED
+    description: "Funds deposited to protocol"
+  - name: STAKED
+    description: "LP tokens staked for rewards"
+  - name: HARVESTING
+    description: "Harvesting rewards"
+  - name: COMPOUNDING
+    description: "Compounding rewards"
+  - name: WITHDRAWING
+    description: "Withdrawing funds"
+  - name: EMERGENCY_EXIT
+    description: "Emergency withdrawal active"
+
+roles:
+  - name: STRATEGIST_ROLE
+    description: "Can execute strategy actions"
+  - name: KEEPER_ROLE
+    description: "Automated keeper - can harvest and compound"
+  - name: GUARDIAN_ROLE
+    description: "Can trigger emergency exit"
+  - name: USER_ROLE
+    description: "Strategy user"
+
+transitions:
+  - id: 1
+    name: "Deposit to Protocol"
+    from: IDLE
+    to: DEPOSITED
+    requiredRole: STRATEGIST_ROLE
+    guard:
+      type: signature
+  
+  - id: 2
+    name: "Stake LP Tokens"
+    from: DEPOSITED
+    to: STAKED
+    requiredRole: STRATEGIST_ROLE
+    hooks:
+      - type: pre
+        contract: "0x0000000000000000000000000000000000000000"
+      - type: post
+        contract: "0x0000000000000000000000000000000000000000"
+  
+  - id: 3
+    name: "Begin Harvest"
+    from: STAKED
+    to: HARVESTING
+    requiredRole: KEEPER_ROLE
+    guard:
+      type: timelock
+      parameter: 86400  # Once per day
+  
+  - id: 4
+    name: "Compound Rewards"
+    from: HARVESTING
+    to: COMPOUNDING
+    requiredRole: KEEPER_ROLE
+    hooks:
+      - type: pre
+        contract: "0x0000000000000000000000000000000000000000"
+  
+  - id: 5
+    name: "Return to Staking"
+    from: COMPOUNDING
+    to: STAKED
+    requiredRole: KEEPER_ROLE
+    hooks:
+      - type: post
+        contract: "0x0000000000000000000000000000000000000000"
+  
+  - id: 6
+    name: "Begin Withdrawal"
+    from: STAKED
+    to: WITHDRAWING
+    requiredRole: STRATEGIST_ROLE
+    guard:
+      type: timelock
+      parameter: 3600  # 1 hour cooldown
+  
+  - id: 7
+    name: "Complete Withdrawal"
+    from: WITHDRAWING
+    to: IDLE
+    requiredRole: STRATEGIST_ROLE
+    hooks:
+      - type: post
+        contract: "0x0000000000000000000000000000000000000000"
+  
+  - id: 8
+    name: "Emergency Exit"
+    from: STAKED
+    to: EMERGENCY_EXIT
+    requiredRole: GUARDIAN_ROLE
+  
+  - id: 9
+    name: "Emergency to Idle"
+    from: EMERGENCY_EXIT
+    to: IDLE
+    requiredRole: STRATEGIST_ROLE
+  
+  - id: 10
+    name: "Harvest and Withdraw"
+    from: HARVESTING
+    to: WITHDRAWING
+    requiredRole: STRATEGIST_ROLE
+

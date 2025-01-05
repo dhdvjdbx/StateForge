@@ -1,0 +1,102 @@
+name: NFTEvolution
+version: "1.0.0"
+initialState: EGG
+
+metadata:
+  description: "NFT creature evolution workflow with time-based maturation"
+  author: "StateForge Examples"
+  category: "Gaming/NFT"
+
+states:
+  - name: EGG
+    description: "Initial egg state, waiting to hatch"
+  - name: HATCHING
+    description: "Egg is in the process of hatching"
+  - name: BABY
+    description: "Newly hatched baby creature"
+  - name: JUVENILE
+    description: "Young creature, still growing"
+  - name: ADULT
+    description: "Fully mature adult creature"
+  - name: LEGENDARY
+    description: "Legendary evolved form"
+  - name: RETIRED
+    description: "Retired from evolution"
+
+roles:
+  - name: OWNER_ROLE
+    description: "NFT owner - can trigger evolution"
+  - name: BREEDER_ROLE
+    description: "Authorized breeder - can access special evolutions"
+  - name: ADMIN_ROLE
+    description: "Game administrator"
+
+transitions:
+  - id: 1
+    name: "Start Hatching Process"
+    from: EGG
+    to: HATCHING
+    requiredRole: OWNER_ROLE
+    guard:
+      type: timelock
+      parameter: 172800  # 2 days minimum age
+  
+  - id: 2
+    name: "Complete Hatching"
+    from: HATCHING
+    to: BABY
+    requiredRole: OWNER_ROLE
+    guard:
+      type: timelock
+      parameter: 86400  # 1 day hatching period
+    hooks:
+      - type: post
+        contract: "0x0000000000000000000000000000000000000000"
+  
+  - id: 3
+    name: "Grow to Juvenile"
+    from: BABY
+    to: JUVENILE
+    requiredRole: OWNER_ROLE
+    guard:
+      type: timelock
+      parameter: 259200  # 3 days
+  
+  - id: 4
+    name: "Mature to Adult"
+    from: JUVENILE
+    to: ADULT
+    requiredRole: OWNER_ROLE
+    guard:
+      type: timelock
+      parameter: 604800  # 7 days
+    hooks:
+      - type: post
+        contract: "0x0000000000000000000000000000000000000000"
+  
+  - id: 5
+    name: "Legendary Evolution"
+    from: ADULT
+    to: LEGENDARY
+    requiredRole: BREEDER_ROLE
+    guard:
+      type: custom
+      validator: "0x0000000000000000000000000000000000000000"
+    hooks:
+      - type: pre
+        contract: "0x0000000000000000000000000000000000000000"
+      - type: post
+        contract: "0x0000000000000000000000000000000000000000"
+  
+  - id: 6
+    name: "Retire Creature"
+    from: ADULT
+    to: RETIRED
+    requiredRole: OWNER_ROLE
+  
+  - id: 7
+    name: "Retire Legendary"
+    from: LEGENDARY
+    to: RETIRED
+    requiredRole: OWNER_ROLE
+
