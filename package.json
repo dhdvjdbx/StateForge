@@ -8,8 +8,14 @@
     "test": "hardhat test",
     "coverage": "hardhat coverage",
     "deploy": "hardhat run scripts/deploy.ts",
+    "deploy:local": "hardhat run scripts/setup-local.ts --network localhost",
+    "verify": "hardhat run scripts/verify.ts",
+    "gas-report": "hardhat run scripts/gas-report.ts",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write ."
+    "lint:sol": "solhint 'contracts/**/*.sol'",
+    "format": "prettier --write .",
+    "clean": "hardhat clean",
+    "typechain": "hardhat typechain"
   },
   "keywords": [
     "blockchain",
