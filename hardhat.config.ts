@@ -38,3 +38,4 @@ const config: HardhatUserConfig = {
 export default config;
 
 /* Update 1 */
+/* Update 2 */
