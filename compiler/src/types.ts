@@ -84,3 +84,4 @@ export interface CompilationResult {
 // Improvement 17
 // Improvement 18
 // Improvement 19
+// Improvement 20
