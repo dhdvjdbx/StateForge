@@ -64,28 +64,3 @@ export interface CompilationResult {
   warnings?: string[];
   dslHash?: string;
 }
-
-// Improvement 1
-// Improvement 2
-// Improvement 3
-// Improvement 4
-// Improvement 5
-// Improvement 6
-// Improvement 7
-// Improvement 8
-// Improvement 9
-// Improvement 10
-// Improvement 11
-// Improvement 12
-// Improvement 13
-// Improvement 14
-// Improvement 15
-// Improvement 16
-// Improvement 17
-// Improvement 18
-// Improvement 19
-// Improvement 20
-// Improvement 21
-// Improvement 22
-// Improvement 23
-// Improvement 24

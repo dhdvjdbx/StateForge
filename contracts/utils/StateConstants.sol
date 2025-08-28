@@ -18,9 +18,3 @@ library StateConstants {
     bytes32 public constant GOVERNOR_ROLE = keccak256("GOVERNOR_ROLE");
 }
 
-// Optimization 1
-// Optimization 2
-// Optimization 3
-// Optimization 4
-// Optimization 5
-// Optimization 6
